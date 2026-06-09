@@ -1,25 +1,9 @@
-import dynamic from 'next/dynamic';
+import { fetchDashboardData } from '@/lib/airtable';
+import Dashboard from '@/components/Dashboard';
 
-const Dashboard = dynamic(() => import('@/components/Dashboard'), {
-  ssr: false,
-  loading: () => (
-    <div
-      className="min-h-screen flex items-center justify-center"
-      style={{ background: '#030305' }}
-    >
-      <div className="flex flex-col items-center gap-3">
-        <div
-          className="w-10 h-10 rounded-xl flex items-center justify-center text-black font-black text-lg animate-pulse"
-          style={{ background: 'linear-gradient(135deg,#00d4ff,#00ff88)' }}
-        >
-          $
-        </div>
-        <p className="text-slate-500 text-sm">Loading dashboard…</p>
-      </div>
-    </div>
-  ),
-});
+export const revalidate = 60; // ISR: regenerate page every 60 seconds
 
-export default function Home() {
-  return <Dashboard />;
+export default async function Home() {
+  const data = await fetchDashboardData();
+  return <Dashboard data={data} />;
 }
