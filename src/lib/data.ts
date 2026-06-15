@@ -8,7 +8,6 @@ export interface KpiCardData {
   value: number;
   format: Format;
   trend: number;
-  accentColor: string;
   sparkline: { v: number }[];
 }
 
@@ -24,12 +23,4 @@ export interface InstalmentEntry {
   amount: number;
 }
 
-export const DATE_RANGES = [
-  'All Time',
-  'Last 7 Days',
-  'Last 14 Days',
-  'Last 30 Days',
-  'Last 90 Days',
-  'This Month',
-  'Last Month',
-];
+export const DATE_RANGES = ['7D', '30D', '90D', 'All'];

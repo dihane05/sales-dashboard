@@ -44,7 +44,7 @@ export default function Dashboard({ data }: Props) {
   const [filters, setFilters] = useState<Filters>({
     closer:     'All Closers',
     setter:     'All Setters',
-    dateRange:  'All Time',
+    dateRange:  '30D',
     leadSource: 'All Sources',
   });
 
@@ -54,48 +54,22 @@ export default function Dashboard({ data }: Props) {
   );
 
   return (
-    <div className="min-h-screen text-white" style={{ background: '#030305' }}>
-      <div className="max-w-[1700px] mx-auto px-5 py-7 lg:px-8 lg:py-8">
-
-        {/* ── Header ── */}
-        <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-7">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center text-black font-black text-base shrink-0"
-                style={{ background: 'linear-gradient(135deg,#00d4ff,#00ff88)' }}
-              >
-                $
-              </div>
-              <h1 className="text-2xl font-extrabold tracking-tight">
-                <span
-                  style={{
-                    background: 'linear-gradient(90deg,#00d4ff,#00ff88)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  Sales
-                </span>
-                <span className="text-white"> Dashboard</span>
-              </h1>
-            </div>
-            <p className="text-slate-500 text-sm pl-12">High Ticket Performance · Live from Airtable</p>
+    <div className="min-h-screen bg-bg text-text">
+      {/* ── Top nav ── */}
+      <nav className="border-b border-border px-5 lg:px-8 h-14 flex items-center justify-between">
+        <span className="text-sm font-semibold tracking-tight">Sales Dashboard</span>
+        <div className="flex items-center gap-4">
+          <span className="font-mono text-xs text-muted">
+            {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-positive" />
+            <span className="text-xs text-muted">Live · refreshes every 60s</span>
           </div>
+        </div>
+      </nav>
 
-          <div className="pl-12 sm:pl-0 sm:text-right">
-            <p className="text-white font-semibold text-sm">
-              {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-            </p>
-            <div className="flex items-center sm:justify-end gap-1.5 mt-1">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
-              </span>
-              <span className="text-slate-500 text-xs">Live · refreshes every 60 s</span>
-            </div>
-          </div>
-        </header>
+      <div className="max-w-[1700px] mx-auto px-5 py-6 lg:px-8">
 
         {/* ── Filters ── */}
         <FilterBar
@@ -108,7 +82,7 @@ export default function Dashboard({ data }: Props) {
         />
 
         {/* ── KPI Grid ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           {computed.kpiCards.map(card => (
             <KpiCard key={card.id} {...card} />
           ))}

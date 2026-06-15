@@ -8,17 +8,24 @@
 
 html,
 body {
-  background: #030305;
-  color: #e2e8f0;
+  background: #0a0a0a;
+  color: #f5f5f5;
+  font-family: var(--font-sans), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar          { width: 5px; height: 5px; }
-::-webkit-scrollbar-track    { background: #0a0d14; }
-::-webkit-scrollbar-thumb    { background: #1e2a40; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #2a3a58; }
+::-webkit-scrollbar-track    { background: #0a0a0a; }
+::-webkit-scrollbar-thumb    { background: #1f1f1f; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #2a2a2a; }
 
 /* Firefox */
-* { scrollbar-width: thin; scrollbar-color: #1e2a40 #0a0d14; }
+* { scrollbar-width: thin; scrollbar-color: #1f1f1f #0a0a0a; }
+
+@layer components {
+  .section-label {
+    @apply text-[11px] font-medium uppercase tracking-[0.05em] text-muted;
+  }
+}

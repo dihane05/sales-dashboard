@@ -14,14 +14,11 @@ function CustomTooltip({ active, payload }: TooltipContentProps) {
   if (!entry) return null;
   const total = (payload[0] as { payload?: { __total?: number } }).payload?.__total ?? 0;
   return (
-    <div
-      className="rounded-xl border text-xs p-3 shadow-2xl"
-      style={{ background: '#0a0d14', borderColor: '#1a2035' }}
-    >
-      <p className="font-semibold mb-1" style={{ color: entry.color }}>{entry.name}</p>
-      <p className="text-slate-300">${entry.value.toLocaleString()}</p>
+    <div className="rounded border border-border bg-card-alt text-xs p-3">
+      <p className="font-medium mb-1" style={{ color: entry.color }}>{entry.name}</p>
+      <p className="font-mono text-secondary">${entry.value.toLocaleString()}</p>
       {total > 0 && (
-        <p className="text-slate-500">{((entry.value / total) * 100).toFixed(1)}% of total</p>
+        <p className="text-muted">{((entry.value / total) * 100).toFixed(1)}% of total</p>
       )}
     </div>
   );
@@ -36,17 +33,14 @@ export default function LeadSourceDonut({ data }: Props) {
   const enriched = data.map(d => ({ ...d, __total: total }));
 
   return (
-    <div
-      className="rounded-xl border p-5 flex flex-col"
-      style={{ background: 'linear-gradient(160deg,#0d1117,#090d16)', borderColor: '#1a2035' }}
-    >
-      <h3 className="text-white font-semibold text-sm">Cash Collected</h3>
-      <p className="text-slate-500 text-xs mt-0.5 mb-4">By lead source</p>
+    <div className="rounded border border-border bg-card p-5 flex flex-col">
+      <h3 className="section-label">Cash Collected</h3>
+      <p className="text-xs text-muted mt-1 mb-4">By lead source</p>
 
       {!mounted ? (
         <div className="h-[180px]" />
       ) : data.length === 0 ? (
-        <div className="h-[180px] flex items-center justify-center text-slate-600 text-sm">
+        <div className="h-[180px] flex items-center justify-center text-muted text-sm">
           No data
         </div>
       ) : (
@@ -74,11 +68,8 @@ export default function LeadSourceDonut({ data }: Props) {
           </ResponsiveContainer>
 
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span className="text-slate-500 text-[10px] font-semibold uppercase tracking-wider">Total</span>
-            <span
-              className="text-sm font-bold mt-0.5"
-              style={{ color: '#00d4ff', textShadow: '0 0 16px #00d4ff60' }}
-            >
+            <span className="section-label">Total</span>
+            <span className="font-mono font-medium text-sm text-text mt-0.5">
               ${total >= 1000 ? `${(total / 1000).toFixed(1)}K` : total.toLocaleString()}
             </span>
           </div>
@@ -90,14 +81,14 @@ export default function LeadSourceDonut({ data }: Props) {
           <div key={d.name} className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full shrink-0" style={{ background: d.color }} />
-              <span className="text-slate-400">{d.name}</span>
+              <span className="text-secondary">{d.name}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-slate-500">
+              <span className="font-mono text-muted">
                 ${d.value >= 1000 ? `${(d.value / 1000).toFixed(1)}K` : d.value}
               </span>
               {total > 0 && (
-                <span className="font-semibold text-slate-300 w-10 text-right">
+                <span className="font-mono font-medium text-secondary w-10 text-right">
                   {((d.value / total) * 100).toFixed(1)}%
                 </span>
               )}

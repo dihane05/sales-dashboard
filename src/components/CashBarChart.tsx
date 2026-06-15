@@ -21,20 +21,17 @@ function CustomTooltip({ active, payload, label }: TooltipContentProps) {
   const entries = payload as ReadonlyArray<{ value?: number; name?: string; color?: string }>;
   const total = entries.reduce((s, e) => s + (e.value ?? 0), 0);
   return (
-    <div
-      className="rounded-xl border text-xs p-3 shadow-2xl"
-      style={{ background: '#0a0d14', borderColor: '#1a2035', minWidth: 160 }}
-    >
-      <p className="font-semibold text-slate-200 mb-2">{String(label ?? '')}</p>
+    <div className="rounded border border-border bg-card-alt text-xs p-3" style={{ minWidth: 160 }}>
+      <p className="font-medium text-text mb-2">{String(label ?? '')}</p>
       {entries.map((e, i) => (
         <div key={i} className="flex justify-between gap-4 mt-1">
           <span style={{ color: e.color }}>{e.name}</span>
-          <span className="text-slate-300 font-medium">${e.value?.toLocaleString()}</span>
+          <span className="font-mono font-medium text-secondary">${e.value?.toLocaleString()}</span>
         </div>
       ))}
-      <div className="flex justify-between gap-4 pt-1.5 mt-1.5 border-t border-slate-700">
-        <span className="text-slate-400 font-semibold">Total</span>
-        <span className="text-white font-bold">${total.toLocaleString()}</span>
+      <div className="flex justify-between gap-4 pt-1.5 mt-1.5 border-t border-border">
+        <span className="text-muted font-medium">Total</span>
+        <span className="font-mono font-medium text-text">${total.toLocaleString()}</span>
       </div>
     </div>
   );
@@ -46,7 +43,7 @@ function CustomLegend({ payload }: DefaultLegendContentProps) {
       {payload?.map(e => (
         <div key={String(e.value)} className="flex items-center gap-1.5">
           <div className="w-2.5 h-2.5 rounded-sm" style={{ background: e.color }} />
-          <span className="text-xs text-slate-400">{String(e.value)}</span>
+          <span className="text-xs text-muted">{String(e.value)}</span>
         </div>
       ))}
     </div>
@@ -58,32 +55,29 @@ export default function CashBarChart({ data, closerNames, closerColors }: Props)
   useEffect(() => { setMounted(true); }, []);
 
   return (
-    <div
-      className="rounded-xl border p-5"
-      style={{ background: 'linear-gradient(160deg,#0d1117,#090d16)', borderColor: '#1a2035' }}
-    >
-      <h3 className="text-white font-semibold text-sm">Cash Collected by Date &amp; Closer</h3>
-      <p className="text-slate-500 text-xs mt-0.5 mb-5">Stacked by team member</p>
+    <div className="rounded border border-border bg-card p-5">
+      <h3 className="section-label">Cash Collected by Date &amp; Closer</h3>
+      <p className="text-xs text-muted mt-1 mb-5">Stacked by team member</p>
 
       {!mounted ? (
         <div className="h-[314px]" />
       ) : data.length === 0 ? (
-        <div className="h-[314px] flex items-center justify-center text-slate-600 text-sm">
+        <div className="h-[314px] flex items-center justify-center text-muted text-sm">
           No data for selected filters
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={data} margin={{ top: 4, right: 4, left: -8, bottom: 0 }} barSize={20}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1a2035" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#1f1f1f" vertical={false} />
             <XAxis
               dataKey="date"
-              tick={{ fill: '#475569', fontSize: 11 }}
-              axisLine={{ stroke: '#1a2035' }}
+              tick={{ fill: '#666666', fontSize: 11 }}
+              axisLine={{ stroke: '#1f1f1f' }}
               tickLine={false}
             />
             <YAxis
               tickFormatter={fmtK}
-              tick={{ fill: '#475569', fontSize: 11 }}
+              tick={{ fill: '#666666', fontSize: 11 }}
               axisLine={false}
               tickLine={false}
               width={46}

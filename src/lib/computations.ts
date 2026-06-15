@@ -21,26 +21,16 @@ export interface DashboardComputed {
 // ── Filtering ─────────────────────────────────────────────────────────────────
 
 function dateRange(filters: Filters): { from: string; to: string } | null {
-  if (filters.dateRange === 'All Time') return null;
+  if (filters.dateRange === 'All') return null;
 
   const today = new Date();
   const iso = (d: Date) => d.toISOString().slice(0, 10);
   const daysAgo = (n: number) => new Date(today.getTime() - n * 86_400_000);
 
   switch (filters.dateRange) {
-    case 'Last 7 Days':  return { from: iso(daysAgo(7)),  to: iso(today) };
-    case 'Last 14 Days': return { from: iso(daysAgo(14)), to: iso(today) };
-    case 'Last 30 Days': return { from: iso(daysAgo(30)), to: iso(today) };
-    case 'Last 90 Days': return { from: iso(daysAgo(90)), to: iso(today) };
-    case 'This Month': {
-      const from = new Date(today.getFullYear(), today.getMonth(), 1);
-      return { from: iso(from), to: iso(today) };
-    }
-    case 'Last Month': {
-      const from = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-      const to   = new Date(today.getFullYear(), today.getMonth(), 0);
-      return { from: iso(from), to: iso(to) };
-    }
+    case '7D':  return { from: iso(daysAgo(7)),  to: iso(today) };
+    case '30D': return { from: iso(daysAgo(30)), to: iso(today) };
+    case '90D': return { from: iso(daysAgo(90)), to: iso(today) };
     default: return null;
   }
 }
@@ -160,25 +150,25 @@ function computeSparklines(
 
 // ── KPI card templates ────────────────────────────────────────────────────────
 
-const TEMPLATES: Array<{ id: string; label: string; format: KpiCardData['format']; accentColor: string }> = [
-  { id: 'callsBooked',        label: 'Calls Booked',          format: 'number',   accentColor: '#00d4ff' },
-  { id: 'dealsClosed',        label: 'Deals Closed',          format: 'number',   accentColor: '#00ff88' },
-  { id: 'callsTaken',         label: 'Calls Taken',           format: 'number',   accentColor: '#00d4ff' },
-  { id: 'closeRate',          label: 'Close Rate',            format: 'percent',  accentColor: '#00ff88' },
-  { id: 'callsOnCalendar',    label: 'Calls On Calendar',     format: 'number',   accentColor: '#a78bfa' },
-  { id: 'showRate',           label: 'Show Rate',             format: 'percent',  accentColor: '#00ff88' },
-  { id: 'upfrontDealCash',    label: 'Upfront Deal Cash',     format: 'currency', accentColor: '#00d4ff' },
-  { id: 'deposits',           label: 'Deposits',              format: 'number',   accentColor: '#00ff88' },
-  { id: 'cashFromDeposits',   label: 'Cash from Deposits',    format: 'currency', accentColor: '#00d4ff' },
-  { id: 'aov',                label: 'AOV',                   format: 'currency', accentColor: '#00ff88' },
-  { id: 'cashCollected',      label: 'Cash Collected',        format: 'currency', accentColor: '#00d4ff' },
-  { id: 'revenueGenerated',   label: 'Revenue Generated',     format: 'currency', accentColor: '#00ff88' },
-  { id: 'noShows',            label: 'No Shows',              format: 'number',   accentColor: '#ff3d57' },
-  { id: 'cancelledCalls',     label: 'Cancelled Calls',       format: 'number',   accentColor: '#ff9f43' },
-  { id: 'reschedules',        label: 'Reschedules',           format: 'number',   accentColor: '#ff9f43' },
-  { id: 'cashPerDay',         label: 'Cash per Day',          format: 'currency', accentColor: '#00d4ff' },
-  { id: 'cashPerCallTaken',   label: 'Cash per Call Taken',   format: 'currency', accentColor: '#00ff88' },
-  { id: 'cashPerAppointment', label: 'Cash per Appointment',  format: 'currency', accentColor: '#00d4ff' },
+const TEMPLATES: Array<{ id: string; label: string; format: KpiCardData['format'] }> = [
+  { id: 'callsBooked',        label: 'Calls Booked',          format: 'number'   },
+  { id: 'dealsClosed',        label: 'Deals Closed',          format: 'number'   },
+  { id: 'callsTaken',         label: 'Calls Taken',           format: 'number'   },
+  { id: 'closeRate',          label: 'Close Rate',            format: 'percent'  },
+  { id: 'callsOnCalendar',    label: 'Calls On Calendar',     format: 'number'   },
+  { id: 'showRate',           label: 'Show Rate',             format: 'percent'  },
+  { id: 'upfrontDealCash',    label: 'Upfront Deal Cash',     format: 'currency' },
+  { id: 'deposits',           label: 'Deposits',              format: 'number'   },
+  { id: 'cashFromDeposits',   label: 'Cash from Deposits',    format: 'currency' },
+  { id: 'aov',                label: 'AOV',                   format: 'currency' },
+  { id: 'cashCollected',      label: 'Cash Collected',        format: 'currency' },
+  { id: 'revenueGenerated',   label: 'Revenue Generated',     format: 'currency' },
+  { id: 'noShows',            label: 'No Shows',              format: 'number'   },
+  { id: 'cancelledCalls',     label: 'Cancelled Calls',       format: 'number'   },
+  { id: 'reschedules',        label: 'Reschedules',           format: 'number'   },
+  { id: 'cashPerDay',         label: 'Cash per Day',          format: 'currency' },
+  { id: 'cashPerCallTaken',   label: 'Cash per Call Taken',   format: 'currency' },
+  { id: 'cashPerAppointment', label: 'Cash per Appointment',  format: 'currency' },
 ];
 
 // ── Main compute function ─────────────────────────────────────────────────────
@@ -235,7 +225,7 @@ export function computeDashboard(
   }));
 
   // ── Bar chart: Cash Collected by Date & closer ──
-  const CHART_COLORS = ['#00d4ff', '#00ff88', '#a78bfa', '#ff9f43', '#ff3d57', '#38bdf8'];
+  const CHART_COLORS = ['#4ade80', '#f5f5f5', '#a3a3a3', '#fbbf24', '#f87171', '#60a5fa'];
   const barByDate: Record<string, Record<string, number>> = {};
   for (const r of fEod) {
     if (!r.date) continue;
