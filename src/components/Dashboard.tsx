@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import FilterBar, { type Filters } from './FilterBar';
 import KpiCard from './KpiCard';
 import CashBarChart from './CashBarChart';
@@ -10,36 +10,67 @@ import type { DashboardData } from '@/lib/airtable';
 import { computeDashboard } from '@/lib/computations';
 import { DATE_RANGES } from '@/lib/data';
 
-interface Props { data: DashboardData; }
+const REFRESH_INTERVAL_MS = 60_000;
 
-export default function Dashboard({ data }: Props) {
+export default function Dashboard() {
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const res = await fetch('/api/dashboard');
+        if (!res.ok) {
+          const body = await res.json().catch(() => null);
+          throw new Error(body?.error ?? `Request failed: ${res.status}`);
+        }
+        const json: DashboardData = await res.json();
+        if (!cancelled) {
+          setData(json);
+          setError(null);
+        }
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+      }
+    }
+
+    load();
+    const interval = setInterval(load, REFRESH_INTERVAL_MS);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, []);
+
   // Build filter option lists from live data
   const closerOptions = useMemo(() => {
+    if (!data) return ['All Closers'];
     const names = data.members
       .filter(m => m.roles.some(r => r.toLowerCase().includes('closer')))
       .map(m => m.name)
       .filter(Boolean)
       .sort();
     return ['All Closers', ...names];
-  }, [data.members]);
+  }, [data]);
 
   const setterOptions = useMemo(() => {
+    if (!data) return ['All Setters'];
     const names = data.members
       .filter(m => m.roles.some(r => r.toLowerCase().includes('setter')))
       .map(m => m.name)
       .filter(Boolean)
       .sort();
     return ['All Setters', ...names];
-  }, [data.members]);
+  }, [data]);
 
   const leadSourceOptions = useMemo(() => {
+    if (!data) return ['All Sources'];
     const seen = new Set<string>();
     const sources = data.pcf
       .map(r => r.leadSource)
       .filter((s): s is string => Boolean(s) && !seen.has(s) && !!seen.add(s))
       .sort();
     return ['All Sources', ...sources];
-  }, [data.pcf]);
+  }, [data]);
 
   const [filters, setFilters] = useState<Filters>({
     closer:     'All Closers',
@@ -49,7 +80,7 @@ export default function Dashboard({ data }: Props) {
   });
 
   const computed = useMemo(
-    () => computeDashboard(data.eod, data.pcf, filters),
+    () => data ? computeDashboard(data.eod, data.pcf, filters) : null,
     [data, filters],
   );
 
@@ -71,33 +102,49 @@ export default function Dashboard({ data }: Props) {
 
       <div className="max-w-[1700px] mx-auto px-5 py-6 lg:px-8">
 
-        {/* ── Filters ── */}
-        <FilterBar
-          filters={filters}
-          onChange={setFilters}
-          dateRanges={DATE_RANGES}
-          closers={closerOptions}
-          setters={setterOptions}
-          leadSources={leadSourceOptions}
-        />
+        {error && (
+          <div className="mb-6 rounded border border-negative/30 bg-card p-4 text-sm text-negative">
+            Failed to load dashboard data: {error}
+          </div>
+        )}
 
-        {/* ── KPI Grid ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-          {computed.kpiCards.map(card => (
-            <KpiCard key={card.id} {...card} />
-          ))}
-        </div>
+        {!data && !error && (
+          <div className="flex items-center justify-center py-24">
+            <span className="font-mono text-sm text-muted">Loading dashboard…</span>
+          </div>
+        )}
 
-        {/* ── Bottom Panels ── */}
-        <div className="grid grid-cols-1 xl:grid-cols-[2fr_1.5fr_1.1fr] gap-4 items-start">
-          <CashBarChart
-            data={computed.barData}
-            closerNames={computed.barCloserNames}
-            closerColors={computed.barCloserColors}
-          />
-          <InstalmentsTable instalments={computed.instalments} />
-          <LeadSourceDonut data={computed.donutData} />
-        </div>
+        {data && computed && (
+          <>
+            {/* ── Filters ── */}
+            <FilterBar
+              filters={filters}
+              onChange={setFilters}
+              dateRanges={DATE_RANGES}
+              closers={closerOptions}
+              setters={setterOptions}
+              leadSources={leadSourceOptions}
+            />
+
+            {/* ── KPI Grid ── */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+              {computed.kpiCards.map(card => (
+                <KpiCard key={card.id} {...card} />
+              ))}
+            </div>
+
+            {/* ── Bottom Panels ── */}
+            <div className="grid grid-cols-1 xl:grid-cols-[2fr_1.5fr_1.1fr] gap-4 items-start">
+              <CashBarChart
+                data={computed.barData}
+                closerNames={computed.barCloserNames}
+                closerColors={computed.barCloserColors}
+              />
+              <InstalmentsTable instalments={computed.instalments} />
+              <LeadSourceDonut data={computed.donutData} />
+            </div>
+          </>
+        )}
 
       </div>
     </div>
