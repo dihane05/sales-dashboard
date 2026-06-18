@@ -27,7 +27,7 @@ export default function FilterBar({
   ];
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+    <div className="flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-2">
         <span className="section-label mr-1">Range</span>
         {dateRanges.map(r => (
@@ -35,10 +35,10 @@ export default function FilterBar({
             key={r}
             type="button"
             onClick={() => onChange({ ...filters, dateRange: r })}
-            className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
               filters.dateRange === r
-                ? 'border-border-light bg-card-alt text-text'
-                : 'border-border bg-card text-muted hover:text-secondary'
+                ? 'border-primary/30 bg-primary/10 text-primary'
+                : 'border-outline-variant/30 bg-surface-container text-on-surface-variant hover:text-on-surface hover:border-outline-variant'
             }`}
           >
             {r}
@@ -53,18 +53,19 @@ export default function FilterBar({
               value={filters[key]}
               onChange={e => onChange({ ...filters, [key]: e.target.value })}
               aria-label={label}
-              className="appearance-none bg-card border border-border text-secondary text-xs
-                         rounded pl-3 pr-7 py-2 cursor-pointer transition-colors
-                         hover:border-border-light focus:outline-none focus:border-border-light"
+              className="appearance-none bg-surface-container border border-outline-variant/30
+                         text-on-surface-variant text-xs rounded-lg pl-3 pr-7 py-2
+                         cursor-pointer transition-colors hover:border-outline-variant
+                         focus:outline-none focus:border-primary"
             >
               {options.map(o => <option key={o} value={o}>{o}</option>)}
             </select>
             <svg
-              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-muted"
+              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant"
               width="10" height="10" viewBox="0 0 10 10" fill="none"
             >
               <path d="M1.5 3.5L5 7L8.5 3.5" stroke="currentColor" strokeWidth="1.5"
-                    strokeLinecap="round" strokeLinejoin="round"/>
+                    strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
         ))}

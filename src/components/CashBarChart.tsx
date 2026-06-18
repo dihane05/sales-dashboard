@@ -21,17 +21,17 @@ function CustomTooltip({ active, payload, label }: TooltipContentProps) {
   const entries = payload as ReadonlyArray<{ value?: number; name?: string; color?: string }>;
   const total = entries.reduce((s, e) => s + (e.value ?? 0), 0);
   return (
-    <div className="rounded border border-border bg-card-alt text-xs p-3" style={{ minWidth: 160 }}>
-      <p className="font-medium text-text mb-2">{String(label ?? '')}</p>
+    <div className="rounded-lg border border-outline-variant/30 bg-surface-container-high text-xs p-3" style={{ minWidth: 160 }}>
+      <p className="font-medium text-on-surface mb-2">{String(label ?? '')}</p>
       {entries.map((e, i) => (
         <div key={i} className="flex justify-between gap-4 mt-1">
           <span style={{ color: e.color }}>{e.name}</span>
-          <span className="font-mono font-medium text-secondary">${e.value?.toLocaleString()}</span>
+          <span className="font-mono font-medium text-on-surface-variant">${e.value?.toLocaleString()}</span>
         </div>
       ))}
-      <div className="flex justify-between gap-4 pt-1.5 mt-1.5 border-t border-border">
-        <span className="text-muted font-medium">Total</span>
-        <span className="font-mono font-medium text-text">${total.toLocaleString()}</span>
+      <div className="flex justify-between gap-4 pt-1.5 mt-1.5 border-t border-outline-variant/30">
+        <span className="text-on-surface-variant font-medium">Total</span>
+        <span className="font-mono font-medium text-on-surface">${total.toLocaleString()}</span>
       </div>
     </div>
   );
@@ -43,7 +43,7 @@ function CustomLegend({ payload }: DefaultLegendContentProps) {
       {payload?.map(e => (
         <div key={String(e.value)} className="flex items-center gap-1.5">
           <div className="w-2.5 h-2.5 rounded-sm" style={{ background: e.color }} />
-          <span className="text-xs text-muted">{String(e.value)}</span>
+          <span className="text-xs text-on-surface-variant">{String(e.value)}</span>
         </div>
       ))}
     </div>
@@ -55,34 +55,34 @@ export default function CashBarChart({ data, closerNames, closerColors }: Props)
   useEffect(() => { setMounted(true); }, []);
 
   return (
-    <div className="rounded border border-border bg-card p-5">
-      <h3 className="section-label">Cash Collected by Date &amp; Closer</h3>
-      <p className="text-xs text-muted mt-1 mb-5">Stacked by team member</p>
+    <div className="rounded-xl border border-outline-variant/30 bg-surface-container p-5">
+      <h3 className="text-base font-semibold text-on-surface">Cash Collected by Date &amp; Closer</h3>
+      <p className="text-xs text-on-surface-variant mt-1 mb-5">Stacked by team member</p>
 
       {!mounted ? (
         <div className="h-[314px]" />
       ) : data.length === 0 ? (
-        <div className="h-[314px] flex items-center justify-center text-muted text-sm">
+        <div className="h-[314px] flex items-center justify-center text-on-surface-variant text-sm">
           No data for selected filters
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={data} margin={{ top: 4, right: 4, left: -8, bottom: 0 }} barSize={20}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1f1f1f" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#494454" vertical={false} />
             <XAxis
               dataKey="date"
-              tick={{ fill: '#666666', fontSize: 11 }}
-              axisLine={{ stroke: '#1f1f1f' }}
+              tick={{ fill: '#cbc3d7', fontSize: 11 }}
+              axisLine={{ stroke: '#494454' }}
               tickLine={false}
             />
             <YAxis
               tickFormatter={fmtK}
-              tick={{ fill: '#666666', fontSize: 11 }}
+              tick={{ fill: '#cbc3d7', fontSize: 11 }}
               axisLine={false}
               tickLine={false}
               width={46}
             />
-            <Tooltip content={CustomTooltip} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
+            <Tooltip content={CustomTooltip} cursor={{ fill: 'rgba(208,188,255,0.05)' }} />
             <Legend content={CustomLegend} />
             {closerNames.map((name, i) => (
               <Bar

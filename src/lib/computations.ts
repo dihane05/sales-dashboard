@@ -225,7 +225,7 @@ export function computeDashboard(
   }));
 
   // ── Bar chart: Cash Collected by Date & closer ──
-  const CHART_COLORS = ['#4ade80', '#f5f5f5', '#a3a3a3', '#fbbf24', '#f87171', '#60a5fa'];
+  const CHART_COLORS = ['#d0bcff', '#a78bfa', '#7c3aed', '#c4abff', '#4ade80', '#60a5fa'];
   const barByDate: Record<string, Record<string, number>> = {};
   for (const r of fEod) {
     if (!r.date) continue;
